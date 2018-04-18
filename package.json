@@ -18,8 +18,8 @@
     "prestart": "npm update",
     "test": "protractor ./e2e/protractor.conf.js"
   },
-  "": {
-    "engine": "8.9.4",
+  "engines": {
+    "node": "8.9.x",
     "npm": "5.7.1"
   },
   "dependencies": {
