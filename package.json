@@ -14,9 +14,13 @@
     "selenium-webdriver": "^2.45.1"
   },
   "scripts": {
-    "postinstall": "bower update",
+    "postinstall": "bower install",
     "prestart": "npm update",
     "test": "protractor ./e2e/protractor.conf.js"
+  },
+  "": {
+    "engine": "8.9.4",
+    "npm": "5.7.1"
   },
   "dependencies": {
     "express": "~4.12.2",
