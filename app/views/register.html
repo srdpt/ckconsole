@@ -1,0 +1,17 @@
+<md-content md-theme="docs-dark" layout-padding layout="column" layout-sm="column">
+  <md-input-container flex>
+    <label>E-mail</label>
+    <input ng-model="vpc.user">
+  </md-input-container>
+  <md-input-container flex>
+    <label>Password</label>
+    <input ng-model="vpc.pass" type="password">
+  </md-input-container>
+  <md-input-container flex>
+    <label>Password Confirmation</label>
+    <input ng-model="vpc.passconfirm" type="password">
+  </md-input-container>
+  <md-button ng-click="vpc.register()">
+    Register
+  </md-button>
+</md-content>

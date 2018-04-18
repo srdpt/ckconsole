@@ -1,0 +1,549 @@
+<!--***************************************-->
+<!--    Negozi Shop Data Collection App    -->
+<!--***************************************-->  
+<!DOCTYPE html>
+<html lang="en" type="text/html">
+  <head>
+    <title>Negozi</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0-rc1/angular-material.min.css"> 
+      <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" type="text/css" href="assets/spinner.css">
+    <link rel="stylesheet" href="assets/shop.css" />
+  </head>
+
+  <body ng-app="app" layout="column" ng-controller="DemoCtl as demo">
+    <!--    Spinner -->
+    <spinner name="appSpinner">
+      <div class="overlay"></div>
+      <div class="spinner">
+        <div class="double-bounce1"></div>
+        <div class="double-bounce2"></div>
+      </div>
+      <div class="please-wait">Loading...</div>
+    </spinner>
+      
+    <div ng-cloak> 
+        <!-- ***** ToolBar *****  -->
+        <md-toolbar layout="row">
+            <div class="md-toolbar-tools">
+                <!--  Main Toolbar Header   -->
+                <label class="toolbar-header">Negozi : Shops Data Collection Application</label>
+                <span flex></span> 
+                <!--   If the user has logged in display dropdown menu with menu icon  -->
+                <div ng-if="demo.login">
+                    <md-menu>
+                        <!--  Menu Icon   -->
+                        <md-button class="md-icon-button" ng-click="demo.openMenu($mdOpenMenu, $event)">
+                            <md-icon md-font-library="material-icons">menu</md-icon>
+                        </md-button>
+                        <!--  DropDown Options  -->
+                        <md-menu-content width="4">
+                            <!-- Welcome User  -->
+                            <md-menu-item>
+                                <label>Welcome: {{ demo.user }}</label>
+                            </md-menu-item>
+                            <!--  Logout Button   -->
+                            <md-menu-item>
+                                <md-button class="md-button" ng-click="demo.onLogout()">Logout</md-button>
+                            </md-menu-item>
+                        </md-menu-content>
+                    </md-menu>
+                </div>   
+            </div>
+        </md-toolbar>
+        
+        <!-- ***** Login Screen ***** -->
+        <md-content ng-if="!demo.login">
+          <!--      Welcome Text    -->
+          <p style="font-size:50px; text-align: center">Welcome to <i>Negozi</i></p>
+          <p style="font-size:25px; text-align: center; margin-top: -55px">
+              The Venice Project Center's Data Collection Application on all things Shop related
+          </p>
+          <!--      Login Card    -->  
+          <div class = "login-card" style="margin-left: auto; margin-right: auto; text-align: center">
+              <p style="font-size:20px; text-align:center; padding:15px" >Sign in to get Started</p>
+              <!--  Input Email -->
+              <div style="padding:5px" >
+                    <label style>E-mail:</label>     
+                    <input ng-model="demo.user" class = "login-fields " id="focusedInput" type="text" placeholder="Email">
+              </div> 
+              <br />
+              <!--  Input Password  -->
+              <div style="padding:5px">
+                    <label>Password:</label>
+                    <input ng-model="demo.pass" class = "login-fields " type="password" id="focusedInput" placeholder="Password">
+              </div>
+              <br />
+              <!--  Submit Button -->
+              <md-button class="md-raised md-primary" style="text-align: center" ng-click="demo.auth()">Submit</md-button>  
+          </div>  
+        </md-content>
+
+        <!-- ***** Main Application Page ***** -->
+        <md-content ng-if="demo.login && !demo.ckid">
+            <!--  Latitude/Longitude Text Boxes and GPS/Submit Buttons-->
+            <div class='md-padding' layout="row" flex>
+                <div style="margin: auto">
+                    <input class="gps-field" id="focusedInput" type="text" placeholder="Input Latitude" ng-model="demo.lat" />
+                    <input class="gps-field" id="focusedInput" type="text" placeholder="Input Longitude" ng-model="demo.lng" />
+                    <md-button ng-click="demo.getLatLng()" class="md-raised md-primary">
+                        GPS
+                    </md-button>
+                </div>
+            </div> 
+            <!-- Tabs Go Here!-->
+            <md-tabs md-dynamic-height md-border-bottom md-swipe-content>
+                <div ng-repeat="element in demo.stores">
+                    <!-- Tab Content-->
+                    <md-tab label="{{element.name}}">
+                            <!--  Card Starts Here  -->
+                            <md-card class="card-field">
+                                <md-card-content id="cd-content">   
+                                
+<!--                                FORM FOR UPLOAD-->
+                                    <div class='md-padding' layout="row" flex>
+                                        <div style="margin: auto">
+                                            <img id="{{element.data.street_number}} {{element.data.street_name}}" src=""/>  
+                                        </div>    
+                                    </div>
+
+                                    <!-- Choose Picture Button  -->
+                                    <form method="post" ng-upload="demo.uploadPhoto(element, content)" action="/upload/image" upload-options-convert-hidden>
+                                      <input type="hidden" value="{{element.ck_id_2012}}" name="ckid">
+                                        <div layout="row" flex>
+                                            <div style ="margin: auto">
+                                                <input ng-click="demo.img_preview(element.data.street_number + ' ' + element.data.street_name, element)" id="src{{element.data.street_number}} {{element.data.street_name}}" name="file" type="file">                                               
+                                                </br>  
+                                                <md-button class="md-raised md-primary" type="submit" >
+                                                    Upload Picture
+                                                </md-button>
+                                                <b>{{ element.hasUploaded }}</b>
+                                            </div>
+                                        </div>
+                                    </form>
+                                        
+                                    <!-- Display Name and Address and Sestiere from Database    -->
+                                        <div layout="row" flex>
+                                            <div class='md-padding' style="margin: auto">
+                                                <label style="font-size:17px">
+                                                    Shop-Name: 
+                                                    <label style="font-size:22px"><b>{{ element.data.store_name }}</b></label>
+                                                    <br />
+                                                    Address: 
+                                                    <label style="font-size:17px">
+                                                        {{ element.data.street_number}} {{ element.data.street_name }}
+                                                    </label>
+                                                    <br />
+                                                    Sestiere: {{ element.data.sestiere_name }} <br />
+                                                    ck_id: {{element.ck_id_2012}}<br />
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <!-- Insert Shop Name   -->
+                                        <div class='md-padding'layout="row" flex>
+                                            <div style="margin: auto">
+                                                <input ng-model= "element.data.store_name" class='card-textbox' id="focusedInput" type="text" value="{{ element.data.store_name }}" placeholder="Input shop name" size="35"/>
+                                            </div>
+                                        </div>  
+
+                                        <!-- Insert Shop Address    -->
+                                       <div class='md-padding' layout="row" flex>
+                                            <div style="margin: auto">
+                                                <input ng-model="element.data.street_number" style='width:40px; height:40px' id="focusedInput" type="text" value="{{ element.data.street_number}}" placeholder="Input shop address"/>
+                                                <input ng-model="element.data.street_name" style='width:80px; height:40px' id="focusedInput" type="text" value=" {{ element.data.street_name }}" placeholder="Input shop address"/>
+                                            </div>
+                                        </div>   
+
+                                        <!--  Insert Ethnicity of Ownership -->
+                                        <div class='md-padding' layout="row" flex>
+                                            <div style="margin: auto">
+                                                <input ng-model="element.data.ethnic_ownership" class='card-textbox' id="focusedInput" type="text" value="{{ element.data.ethnic_ownership}}" placeholder="Input ethnicity of ownership" size="35"/>
+                                            </div>
+                                        </div>  
+                                
+                                        <!--  Goods Sold Autocomplete DropDown  -->
+                                        <div class='md-padding' id="fields" layout="row" flex>
+                                            <div style="margin:auto">
+                                                <md-content class="md-padding" style="background-color:#A0A9DA">
+                                                    <form ng-submit="$event.preventDefault()">
+                                                        <md-autocomplete
+                                                          md-selected-item="demo.selectedItem"
+                                                          md-search-text-change="demo.searchTextChange(demo.searchText)"
+                                                          md-search-text="demo.searchText"
+                                                          md-selected-item-change="demo.selectedItemChange(element, item)"
+                                                          md-items="item in demo.shoptypes | filter:demo.searchText"
+                                                          md-item-text="item.display"
+                                                          md-min-length="0"
+                                                          placeholder="Enter Goods Sold">
+                                                            <md-item-template ng-model= "element.data.nace_plus_descr" >
+                                                                <span md-highlight-text="demo.searchText" md-highlight-flags="^i">
+                                                                    {{ item.display }}
+                                                                </span>
+                                                            </md-item-template>
+                                                        </md-autocomplete>
+                                                    </form>
+                                                </md-content>
+                                            </div>    
+                                        </div>
+                                    
+                                        <!--  Select Shop Type  -->
+                                        <div class='md-padding' layout="row" flex>
+                                            <div style="margin: auto">
+                                                Select shop type
+                                                <md-radio-group ng-model="element.data.shop_type">
+                                                    <md-radio-button value="Tourist">Tourist</md-radio-button>
+                                                    <md-radio-button value="Resident">Resident</md-radio-button>
+                                                    <md-radio-button value="Mixed">Mixed</md-radio-button>
+                                                </md-radio-group>
+                                            </div>
+                                        </div> 
+
+                                        <!-- Plateatici Y/N -->
+                                        <div class='md-padding' layout="row" flex>
+                                            <div style="margin: auto">
+                                                Plateatici
+                                                <md-radio-group ng-model="element.data.plateatici">
+                                                    <md-radio-button value="Yes">Yes</md-radio-button>
+                                                    <md-radio-button value="No">No</md-radio-button>
+                                                </md-radio-group>
+                                            </div>
+                                        </div>
+                                
+                                        <!-- Insert Number of tables of four that make up Plateatico    -->
+                                       <div class='md-padding' layout="row" flex>
+                                            <div style="margin: auto">
+                                                Number of four seat tables in Plateatico:
+                                            </div>
+                                        </div>
+                                        <div class='md-padding' layout="row" flex>
+                                            <div style="margin: auto">
+                                                <input ng-model="element.data.plateatici_seats_4" class='card-textbox-plat' id="focusedInput" type="text" placeholder="Tables of Four"/>
+                                            </div>
+                                        </div>
+                                
+                                        <!-- Insert Number of tables of two that make up Plateatico    -->
+                                        <div class='md-padding' layout="row" flex>
+                                            <div style="margin: auto">
+                                                Number of two seat tables in Plateatico:
+                                            </div>
+                                        </div>
+                                        <div class='md-padding' layout="row" flex>
+                                            <div style="margin: auto">
+                                                <input ng-model="element.data.plateatici_seats_2" class='card-textbox-plat' id="focusedInput" type="text" placeholder="Tables of Two"/>
+                                            </div>
+                                        </div>
+                                
+                                        <!-- Section for Notes -->
+                                        <div class='md-padding' layout="row" flex>
+                                            <div style="margin: auto">
+                                                Notes : 
+                                                <br />
+                                                <textarea ng-model="element.data.notes" rows="6" cols="15">Have some notes? Add them here!</textarea>    
+                                            </div>
+                                        </div>
+                                
+                                        <!-- Save Button-->
+                                        <div layout="row" style="margin-bottom:20px"flex>
+                                            <div style="margin:auto">
+                                                <md-button class="md-raised md-primary" 
+                                                           ng-click="demo.save_element(element)" 
+                                                           ng-disabled = "element.has_new_photo == false" >
+                                                    SAVE
+                                                </md-button><br />
+                                            </div>
+                                        </div>
+                                
+                                        <div layout="row" style="margin-bottom:20px"flex>
+                                            <div style="margin:auto">
+                                                Migrated at : {{ element.hasSaved }}
+                                            </div>
+                                        </div>
+<!--                                    </form>-->
+                                    </md-card-content>
+                                </md-card>
+                            </md-tab>
+                        </div>
+                </md-tabs>  
+            </md-content>
+        </div>    
+    
+<!--************************-->
+<!--    Get Dependencies    -->
+<!--************************-->  
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-material/angular-material.js"></script>
+    <script src="bower_components/angular-animate/angular-animate.js"></script>
+    <script src="bower_components/angular-aria/angular-aria.js"></script>
+    <script src="bower_components/angular-route/angular-route.min.js"></script>
+    <script src="bower_components/firebase/firebase.js"></script>
+    <script src="bower_components/angular-spinners/dist/angular-spinners.min.js"></script>
+    <script src="bower_components/ngUpload/ng-upload.min.js"></script>
+    <script src="bower_components/rsvp/rsvp.min.js"></script>
+    <script src="bower_components/geofire/dist/geofire.min.js"></script>
+      
+<!--*******************-->
+<!--    JavaScripts    -->
+<!--*******************-->        
+    <script type="text/javascript">
+      angular
+        .module('app', [ 'ngMaterial', 'ngRoute', 'angularSpinners', 'ngUpload' ]);
+          
+      (function(){
+        angular.module('app').controller('DemoCtl', [
+          '$scope', '$q', '$http', 'spinnerService', '$mdDialog', function($scope, $q, $http, spinnerService, $mdDialog){
+            var self = this;   
+
+            var fb = new Firebase('https://ckdata.firebaseio.com');   
+
+            self.login = false;
+            self.user = '';
+            self.uid  = '';
+            self.pass = '';
+            self.radio_result_type = '';
+            self.radio_result_plateatici = '';
+
+            self.ckid = false;
+            self.members = [];
+            self.uploaded = false;
+
+            self.category = false;
+            self.setted_category = false;
+            self.save_btn_disabled = true;
+            self.target = ' ';      
+
+            self.shops_keys = [];
+            self.shoptypes = [];
+            self.stores = []; 
+              
+            self.selectedItemChange = function(element, item){
+                element.data.nace_plus_descr = item.display;
+                element.data.nace_plus_code = item.code;
+            }
+
+            // Radio Shop Type Buttons      
+            self.setSelectType = function(type){
+             self.radio_result_type = type;   
+            }
+
+            // Radio Y/N Plateatici Buttons   
+            self.setSelectPlat = function(type){
+             self.radio_result_plateatici = type;   
+            }
+
+            // Code for displaying Image Preview
+            self.img_preview = function(tab_name, element){
+                element.hasUploaded = " ";
+                var src = document.getElementById("src"+tab_name);
+                self.target = document.getElementById(tab_name);
+                console.log(self.target);
+                console.log(src);
+                var fr=new FileReader();
+                // when image is loaded, set the src of the image where you want to display it
+                fr.onload = function(e) { self.target.src = this.result; };
+                src.addEventListener("change",function() {
+                    // fill fr with image data 
+                    fr.readAsDataURL(src.files[0]); 
+                    $scope.$apply();
+              });
+            }; 
+
+            // Code for displaying drop downmenu on toolbar      
+            var originatorEv;
+            self.openMenu = function($mdOpenMenu, ev) {
+              originatorEv = ev;
+              $mdOpenMenu(ev);
+            };        
+
+            // Gets inputted credentials for Authentication      
+            self.getauth = function(){
+            var authData = fb.getAuth();
+                if (authData) {
+                  self.user = authData.password.email;
+                  self.uid  = authData.uid;
+                  self.login = true;
+                  self.load_members();      
+                }
+            };
+
+            // Authentication through Firebase      
+            self.auth = function(){
+                spinnerService.show('appSpinner');
+                fb.authWithPassword({
+                  email    : self.user,
+                  password : self.pass
+                }, function (error, authData){
+                  spinnerService.hide('appSpinner');
+                  if (error) return alert("Login Failed!", error);
+                  self.login = true;
+                  self.load_members();   
+                });
+            };
+
+            // User Logout through Firebase     
+             self.onLogout = function(){
+                 fb.unauth();
+                 self.login = false;
+             }
+
+            //Code for getting the current Lng/Lat of User      
+            self.getLatLng = function(){
+                 self.lat = 'calculating...';
+                 self.lng = 'calculating...';
+                 navigator.geolocation.getCurrentPosition(function(pos){
+                     console.log(pos);
+                     self.lat = pos.coords.latitude;
+                     self.lng = pos.coords.longitude;
+                     $scope.$apply();
+                     self.getShops();
+                 });
+            };  
+
+
+            // Code for creating tabs for the closest shops to the user  
+            self.getShops = function(){
+              var geoFire = new GeoFire(fb.child("_geodata"));
+              var geoQuery = geoFire.query({
+                center: [self.lat, self.lng],
+                radius: 0.07
+              });
+              self.stores = [];
+              var onKeyEnteredRegistration = geoQuery.on("key_entered", function(key, location, distance) {
+                var ck_id = key.split(':')[1];
+                if (self.shops_keys.indexOf(ck_id) > 0) {
+                  // console.log(key + " entered query at " + location + " (" + distance + " km from center)");
+                  fb.child('data').child(ck_id).once('value', function(shop_data){
+                    var result = shop_data.val();
+                    result.name = result.data.street_number; //.store_name;
+                    result.ck_id_2012 = ck_id;
+                    result.has_new_photo = false;
+                    self.stores.push(result);
+                    $scope.$apply();
+                  });
+                } 
+              });      
+            };
+
+            // Code for Uploading Images onto Amazon S3
+            self.uploadPhoto = function(element, content){
+                console.log("Im here!", element, content);
+                // https://s3.amazonaws.com/cityknowledge/ckdata/00101de4-7d93-3a0d-ab18-c4e8d4dc6fd3.png
+                if (content && content.status == 'ok') {
+                  element.has_new_photo = true;
+                  element.data.picture_url = content.file;
+                  element.hasUploaded = "OK!";  
+                  console.log(''+content.file);
+                  return self.uploaded = true;
+                }
+                alert("ERRORE\n"+content.msg);
+            };
+              
+            // Code for saving element onto b15_shops database      
+            self.save_element = function(element){
+                //Upload photo on save
+                console.log("SAVE TO", element);
+                // fb.child('b15_shops').child(element.ck_id_2012).update(element, function(e){ alert(e) });
+                element.hasSaved = (new Date).toJSON();
+                
+                fb.child('data').child(element.ck_id_2012).child('2015').update({
+                  picture_url:        ''+element.data.picture_url,
+                  name:               ''+element.data.store_name,
+                  address_number:     ''+element.data.street_number,
+                  address_street:     ''+element.data.street_name,
+                  ownership:          ''+element.data.ethnic_ownership,
+                  nace_plus_code:     ''+element.data.nace_plus_code,
+                  nace_plus_descr:    ''+element.data.nace_plus_descr,
+                  shop_type:          ''+element.data.shop_type,
+                  plateatici:         ''+element.data.plateatici        ,
+                  plateatici_seats_4: ''+element.data.plateatici_seats_4,
+                  plateatici_seats_2: ''+element.data.plateatici_seats_2,
+                  notes:              ''+element.data.notes,
+                  when:               (new Date).toJSON()
+                });
+                fb.child('groups').child('MERGE Stores 2012').on('value', function(v){
+                  var member_scanned = v.val().member_scanned;
+                  if (!member_scanned)
+                    member_scanned = element.ck_id_2012;
+                  else
+                    member_scanned = member_scanned + ',' + element.ck_id_2012;
+                  setTimeout(function(){
+                    fb.child('groups').child('MERGE Stores 2012').update({
+                      member_scanned: member_scanned
+                    });
+                  }, 100);
+                });
+                // fb.child('groups').child('MERGE Stores 2012').on('value', function(v){
+                //   var member_scanned = v.val().member_scanned;
+                //   if (!member_scanned) member_scanned = '';
+                //   member_scanned = member_scanned.split(',');
+                //   member_scanned.push(element.ck_id_2012);
+                //   member_scanned = member_scanned.join(',');
+                //   console.log("..", member_scanned);
+                // });
+            };
+
+            // Part of Demo Code
+            self.clean = function(){
+                self.ckid = false;
+                self.uploaded = false;
+                self.category = false;
+                self.setted_category = false;
+            };
+
+            self.member_descr = function(ckid, row_index){
+                var deferred = $q.defer();
+
+                fb.child('data').child(ckid).child('data').child('store_name').once('value', function(my_data){
+                  var result = my_data.val();
+//                  console.log('data/'+ckid+'/data/store_name', row_index, result);
+                  self.members[row_index].descr = result || ckid;
+                  $scope.$apply();
+                  deferred.resolve(result);
+                });
+
+                return deferred.promise;
+            };
+
+            self.load_members = function(){
+                fb.child('groups').child('MERGE Stores 2012').child('member_list').once('value', function(my_data){
+                  self.members = my_data.val().split(",").splice(0,10).map(function(e, i){
+                    self.member_descr(e, i);
+                    return {
+                      id:   e,
+                      decr: e
+                    }
+                  });
+                  angular.d = self.members;
+                });
+            };
+
+            fb.child('nace_plus').once('value', function(my_data){
+                var nace_codes = my_data.val();
+                console.log(nace_codes);
+                for (i in nace_codes){
+                    if (nace_codes[i].descr_plus) {
+                        // console.log(nace_codes[i].descr_plus);
+                        self.shoptypes.push({display: nace_codes[i].descr_plus, code: nace_codes[i].nace_plus})
+                    }
+                }
+            });      
+
+            fb.child('groups').child('MERGE Stores 2012').child('member_list').once('value', function(my_data){
+                self.shops_keys = my_data.val().split(',');
+                // console.log(my_data.val().split(','));
+            });
+
+            // Get Authentication
+            self.getauth();
+           
+        }]);
+      })();
+
+    </script>
+  </body>
+</html>

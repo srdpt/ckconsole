@@ -1,0 +1,131 @@
+md-toolbar-tools h1 {
+  font-size: inherit;
+  font-weight: inherit;
+  margin: inherit;
+}
+
+md-sidenav.md-locked-open {
+  width: 150px !important;
+  min-width: 150px !important;
+  max-width: 150px !important;
+}
+md-radio-button {
+    display: inline;
+}
+
+md-autocomplete {
+    width: 300px;
+}
+
+md-card {
+ background-color: #A0A9DA;
+ margin: auto;   
+ width: 70%;
+ overflow: auto;
+}
+
+md-tab {
+    background-color: #01A3B4;
+}
+
+md-card-content {
+ background-color: #A0A9DA;
+}
+
+md-padding {
+  color: #A0A9DA;
+}
+
+.card-textbox {
+    width: 300px;
+    height: 30px;
+}
+
+img {
+    display: block;
+    max-width:100%;
+    max-height:100%;
+    width: auto;
+    height: auto;
+}
+
+.card-field {
+ background-color: #A0A9DA;
+ margin: auto;   
+ width: 70%;
+ overflow: auto;
+}
+
+.gps-field {
+    width: 200px;
+    height: 40px;
+}
+
+.toolbar-header {
+    font-size: 20px;
+}
+
+md-tabs{
+    background-color:#333096;
+}
+
+.login-fields {
+       width: 400px; 
+       height: 30px; 
+       margin: auto";
+}
+
+.login-card {
+    background-color: #A0A9DA;
+    width: 60%;
+    height: 23%;
+}
+
+@media only screen and (max-width: 700px) {
+    
+    md-radio-button {
+        display: block;
+    }
+    
+    md-autocomplete {
+        width: 100px;
+    }
+    
+    .card-field {
+     background-color: #A0A9DA;
+     margin: auto;   
+     width: 80%;
+     overflow: auto;
+    }
+    
+    .card-textbox-plat{
+        width: 120px;
+        height: 35px;
+    }
+    
+    .card-textbox {
+        width: 130px;
+        height: 55px;
+    }
+    
+    .gps-field {
+        width: 40px;
+        height: 50px;
+    }
+    
+    .toolbar-header{
+        font-size: 15px;
+    }
+    
+    .login-fields  {
+         width: 150px; 
+         height: 55px; 
+    }
+    
+    .login-card {
+        background-color: #A0A9DA;
+        width: 90%;
+        height: 70%;
+    }
+    
+}

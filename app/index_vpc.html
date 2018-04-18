@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" >
+  <head>
+    <title>Angular Material - Starter App</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+
+    <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:400,500,700,400italic'>
+    <link rel="stylesheet" href="./bower_components/angular-material/angular-material.css"/>
+    <link rel="stylesheet" href="assets/app.css"/>
+  </head>
+
+  <body ng-app="app" layout="row" ng-controller="VpcController as vpc">
+
+  <md-sidenav class="site-sidenav md-sidenav-left md-whiteframe-z2"
+                md-component-id="left"
+                md-is-locked-open="$mdMedia('gt-sm')">
+
+    <md-toolbar class="md-whiteframe-z1">
+      <h1>Functions</h1>
+    </md-toolbar>
+
+    <md-list>
+      <md-list-item>
+        <md-button ng-click="vpc.gotovpc('login')">
+          Firebase Login
+        </md-button>
+      </md-list-item>
+      <md-list-item>
+        <md-button ng-click="vpc.gotovpc('register')">
+          Firebase Register
+        </md-button>
+      </md-list-item>
+      <md-list-item>
+        <md-button ng-click="vpc.gotovpc('server')">
+          Server Calls
+        </md-button>
+      </md-list-item>
+    </md-list>
+
+  </md-sidenav>
+
+
+  <div flex layout="column" tabIndex="-1" role="main" class="md-whiteframe-z2">
+
+    <md-toolbar layout="row" class="md-whiteframe-z1">
+      <h1>Angular Material - VPC Starter App</h1>
+    </md-toolbar>
+
+    <md-content flex id="content">
+      <div ng-view></div>
+    </md-content>
+
+  </div>
+
+    <script src="./bower_components/angular/angular.js"></script>
+    <script src="./bower_components/angular-animate/angular-animate.js"></script>
+    <script src="./bower_components/angular-aria/angular-aria.js"></script>
+    <script type="text/javascript" src="./bower_components/angular-material/angular-material.js"></script>
+    <script src="bower_components/angular-route/angular-route.min.js"></script>
+    <script src="bower_components/firebase/firebase.js"></script>
+
+    <script src="./src/users/Users.js"></script>
+    <script src="./src/users/UserController.js"></script>
+    <script src="./src/users/UserService.js"></script>
+
+    <script type="text/javascript">
+
+          angular
+              .module('app', [
+                'ngMaterial',
+                'ngRoute'
+              ])
+              .config(['$routeProvider', function($routeProvider) {
+                $routeProvider.otherwise({redirectTo: '/login'});
+                $routeProvider
+                  .when('/login', {
+                     templateUrl: 'views/login.html'
+                  })
+                  .when('/register', {
+                     templateUrl: 'views/register.html'
+                  })
+                  .when('/server', {
+                     templateUrl: 'views/server.html'
+                  })
+                  ;
+              }])
+              .config(function($mdThemingProvider, $mdIconProvider){
+
+                  $mdIconProvider
+                      .defaultIconSet("./assets/svg/avatars.svg", 128)
+                      .icon("menu"       , "./assets/svg/menu.svg"        , 24)
+                      .icon("share"      , "./assets/svg/share.svg"       , 24)
+                      .icon("google_plus", "./assets/svg/google_plus.svg" , 512)
+                      .icon("hangouts"   , "./assets/svg/hangouts.svg"    , 512)
+                      .icon("twitter"    , "./assets/svg/twitter.svg"     , 512)
+                      .icon("phone"      , "./assets/svg/phone.svg"       , 512);
+
+                      $mdThemingProvider.theme('default')
+                          .primaryPalette('brown')
+                          .accentPalette('red');
+
+              });
+          
+          (function(){
+            angular
+              .module('app')
+              .controller('VpcController', [
+                '$q', '$http', function($q, $http){
+                  var self = this;
+                  
+                  self.gotovpc = function(my_dest){
+                    document.location.href = 'index_vpc.html#/'+my_dest;
+                  };
+                  
+                  self.random_result = '--';
+                  self.getrandom = function(){
+                    $http.get('/misc/get_rand', {
+                    }).
+                    success(function(data, status, headers, config) {
+                      self.random_result = data.result;
+                    });
+                  };
+                  self.user = '--';
+                  self.pass = '';
+                  self.passconfirm = '';
+                  self.fb = new Firebase('https://demovpc.firebaseio.com/');
+                  self.auth = function(){
+                    self.fb.authWithPassword({
+                      email    : self.user,
+                      password : self.pass
+                    }, function (error, authData){
+                      console.log("Auth Data:", authData);
+                      if (error)
+                        alert("Login Failed!", error);
+                      else {
+                        alert("Login Success!");
+                      }
+                    });
+                  };
+                  self.register = function(){
+                    if (self.user.length < 4) { alert('Specify an E-Mail' ); return false; }
+                    if (self.pass.length < 6) { alert('Password too short'); return false; }
+                    if (self.pass != self.passconfirm) {
+                      alert('Password do not match'); return false;
+                    }
+                    self.fb.createUser({
+                      email    : self.user,
+                      password : self.pass
+                    }, function(error, authData) {
+                      console.log("Auth Data:", authData);
+                      if (error) {
+                        alert("Error creating user: " + error);
+                      } else {
+                        alert("User created!");
+                      }
+                    });
+                  };
+                }
+               ]);
+          })();
+          
+
+    </script>
+
+  </body>
+</html>
