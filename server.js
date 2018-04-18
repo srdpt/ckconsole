@@ -5,7 +5,7 @@ var express = require('express'),
     upload = require('./middleware/upload'),
     app = express();
 
-var PORT = 15011;
+var PORT = process.env.PORT;
 
 // serve static files from public/ directory
 app.use(express.static(__dirname + '/app'));
